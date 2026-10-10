@@ -1,53 +1,50 @@
 # easytrader
 
-本仓库按 [shidenggui/easytrader](https://github.com/shidenggui/easytrader) 的 `use` / `buy` / `sell` 用法重新封装。`use("ths")`、`use("miniqmt")` 和 `use("api")` 都走 `Api.dll` 的登录、查询、下单和撤单。不再操作同花顺客户端，也不依赖 miniQMT。不是 easytrader 官方。
+按 easytrader 的 `use` / `buy` / `sell` 写交易代码。`use("api")`、`use("ths")`、`use("miniqmt")` 都登录 `Api.dll`，向券商下单和查询。
+
+不需要打开同花顺客户端，也不需要安装 miniQMT。支持大部分券商的账户，用 DLL 提供的地址和账号登录即可。
+
+## Api.dll
+
+面向 A 股的交易和行情库。
+
+| 能力 | 说明 |
+| --- | --- |
+| 券商交易 | 登录、资金、持仓、当日委托、当日成交、买入、卖出、撤单、一键打新 |
+| A 股行情 | K 线、分时、实时报价 |
+| L2 | 十档、逐笔成交、逐笔委托 |
+
+DLL、完整函数表和各语言示例见 [stockapi](https://github.com/jyApiZx/stockapi)。接入与授权请联系 Telegram：`JyApi888`。
+
+进程位数须与 `Api.dll` 一致。查询结果为 GBK 文本，行以换行分隔，列以制表符分隔。
+
+## 交易
 
 ```python
 import easytrader
+
 user = easytrader.use("api")
-user.prepare({"ip": "YOUR_BROKER_IP", "port": 0, "account": "YOUR_ACCOUNT", "password": "YOUR_PASSWORD"})
+user.prepare({
+    "ip": "YOUR_BROKER_IP",
+    "port": 0,
+    "account": "YOUR_ACCOUNT",
+    "password": "YOUR_PASSWORD",
+})
+
+user.balance()
+user.position()
+user.today_entrusts()
+user.today_trades()
+
 user.buy("000001", 10.0, 100)
+user.sell("000001", 10.5, 100)
+user.cancel_entrust("委托编号", exchange_id="1")  # 1 上海，0 深圳
+
+user.exit()
 ```
 
-DLL 与函数说明见 [jyApiZx/stockapi](https://github.com/jyApiZx/stockapi)。接入请咨询 Telegram：`JyApi888`。
+`prepare` 也可以传入同样字段的 JSON 文件路径。
 
-# 原项目说明
+## 说明
 
-# easytrader
-
-[![Package](https://img.shields.io/pypi/v/easytrader.svg)](https://pypi.python.org/pypi/easytrader)
-[![License](https://img.shields.io/github/license/shidenggui/easytrader.svg)](https://github.com/shidenggui/easytrader/blob/master/LICENSE)
-
-* 进行股票量化交易
-* 通用的同花顺客户端模拟操作
-* 支持券商的 [miniqmt](https://easytrader.readthedocs.io/zh-cn/master/miniqmt/) 官方量化接口
-* 支持雪球组合调仓和跟踪
-* 支持远程操作客户端
-* 支持跟踪 `joinquant`, `ricequant` 的模拟交易
-
-
-### 微信群以及公众号
-
-欢迎大家扫码关注公众号「食灯鬼」，一起交流。进群可通过菜单加我好友，备注量化。
-
-![公众号二维码](https://camo.githubusercontent.com/6fad032c27b30b68a9d942ae77f8cc73933b95cea58e684657d31b94a300afd5/68747470733a2f2f67697465652e636f6d2f73686964656e676775692f6173736574732f7261772f6d61737465722f755069632f6d702d71722e706e67)
-
-若二维码因 Github 网络无法打开，请点击[公众号二维码](https://camo.githubusercontent.com/6fad032c27b30b68a9d942ae77f8cc73933b95cea58e684657d31b94a300afd5/68747470733a2f2f67697465652e636f6d2f73686964656e676775692f6173736574732f7261772f6d61737465722f755069632f6d702d71722e706e67)直接打开图片。
-
-### Author
-
-> Blog [@shidenggui](https://shidenggui.com) · Weibo [@食灯鬼](https://www.weibo.com/u/1651274491) · Twitter [@shidenggui](https://twitter.com/shidenggui)
-
-### 相关
-
-* [easyquotation 实时获取全市场股票行情](https://github.com/shidenggui/easyquotation)
-* [easyquant 简单的量化框架](https://github.com/shidenggui/easyquant)
-
-
-### 模拟交易
-
-* 雪球组合 by @[haogefeifei](https://github.com/haogefeifei)（[说明](docs/xueqiu.md)）
-
-### 使用文档
-
-[中文文档](https://easytrader.readthedocs.io/)
+调用风格来自 easytrader。下单和查询由 `Api.dll` 完成。雪球、聚宽、米筐的跟单不在本仓库的支持范围内。许可证见 [LICENSE](LICENSE)。
