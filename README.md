@@ -1,56 +1,24 @@
 # easytrader
 
-# 通达信/同花顺纯协议接口
+按原来的 `use` 写交易。`use("ths")` 仍是同花顺客户端，`use("miniqmt")` 仍是 miniQMT。雪球和其他券商客户端的入口没有改。
 
-**产品介绍见 [thsapi.com](https://thsapi.com/)。提供通达信/同花顺纯协议接口，直连券商，无需启动客户端，支持大部分券商。接入请联系 Telegram：`JyApi888`。**
+客户端下单慢，界面操作也容易漏单、错单。要纯协议直接连券商，用 `use("thsapi")`，加载 `thsapi.dll`。不用把同花顺或通达信客户端开着。下单、撤单和查询走 DLL。
 
-完整函数表和各语言示例见 [stockapi](https://github.com/jyApiZx/stockapi)。
+交易包：[64 位](https://github.com/jyApiZx/stockapi/releases/download/v1.0.2/thsapi_1.0.2_x64.zip)、[32 位](https://github.com/jyApiZx/stockapi/releases/download/v1.0.2/thsapi_1.0.2_x32.zip)。调用说明见 [stockapi](https://github.com/jyApiZx/stockapi)。
 
-按 easytrader 的 `use` / `buy` / `sell` 写交易代码。`use("api")`、`use("ths")`、`use("miniqmt")` 都登录 `Api.dll`，向券商下单和查询。
-
-不需要打开同花顺客户端，也不需要安装 miniQMT。支持大部分券商的账户，用 DLL 提供的地址和账号登录即可。
-
-## Api.dll
-
-面向 A 股的交易和行情库。
-
-| 能力 | 说明 |
-| --- | --- |
-| 券商交易 | 登录、资金、持仓、当日委托、当日成交、买入、卖出、撤单、一键打新 |
-| A 股行情 | K 线、分时、实时报价 |
-| L2 | 十档、逐笔成交、逐笔委托 |
-
-DLL 与函数说明见 [stockapi](https://github.com/jyApiZx/stockapi)。
-
-进程位数须与 `Api.dll` 一致。查询结果为 GBK 文本，行以换行分隔，列以制表符分隔。
-
-## 交易
+## 纯协议
 
 ```python
 import easytrader
 
-user = easytrader.use("api")
+user = easytrader.use("thsapi")
 user.prepare({
-    "ip": "YOUR_BROKER_IP",
-    "port": 0,
+    "ip": "trade.10jqka.com.cn",
+    "port": 8002,
     "account": "YOUR_ACCOUNT",
     "password": "YOUR_PASSWORD",
 })
-
 user.balance()
-user.position()
-user.today_entrusts()
-user.today_trades()
-
-user.buy("000001", 10.0, 100)
-user.sell("000001", 10.5, 100)
-user.cancel_entrust("委托编号", exchange_id="1")  # 1 上海，0 深圳
-
-user.exit()
 ```
 
-`prepare` 也可以传入同样字段的 JSON 文件路径。
-
-## 说明
-
-调用风格来自 easytrader。下单和查询由 `Api.dll` 完成。雪球、聚宽、米筐的跟单不在本仓库的支持范围内。许可证见 [LICENSE](LICENSE)。
+先用同花顺模拟账户把查询、下单和撤单测好。程序位数要和 `thsapi.dll` 一致。

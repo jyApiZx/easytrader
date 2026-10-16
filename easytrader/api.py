@@ -69,7 +69,17 @@ def use(broker, debug=False, **kwargs):
 
         return UniversalClientTrader()
 
-    if broker.lower() in ["ths", "同花顺客户端", "miniqmt", "api", "dll", "stockapi"]:
+    if broker.lower() in ["ths", "同花顺客户端"]:
+        from easytrader.universal_clienttrader import UniversalClientTrader
+
+        return UniversalClientTrader()
+
+    if broker.lower() in ["miniqmt"]:
+        from easytrader.miniqmt.miniqmt_trader import MiniqmtTrader
+
+        return MiniqmtTrader()
+
+    if broker.lower() in ["thsapi", "api", "dll", "stockapi"]:
         from easytrader.dll_trader import ApiTrader
 
         return ApiTrader()
